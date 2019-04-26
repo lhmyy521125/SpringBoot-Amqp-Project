@@ -1,0 +1,50 @@
+server:
+  port: 8026
+
+spring:
+  #rabbitmq配置
+  rabbitmq:
+    addresses: 192.168.1.28:5672
+    username: toher
+    password: toher888
+    connection-timeout: 15000
+    virtual-host: /
+    publisher-confirms: true #开启消息确认
+    publisher-returns: true #开去消息Return
+    #    template:
+    #      mandatory: true #交换机找不到QUEUE时，会调用Basic.Return 命令将消息返回给生产者
+    listener:
+      direct:
+        acknowledge-mode: manual # 开启手动 ，否则confirm自动确认
+      simple:
+        acknowledge-mode: manual  # 开启消费端ACK
+        concurrency: 2  #消费者的最小数量
+        max-concurrency: 5  #消费者的最大数量
+        prefetch: 1 #在单个请求中处理的消息个数
+
+  #druid单数源配置
+  datasource:
+    url: jdbc:sqlserver://192.168.1.25:1433;databaseName=rabbitmq_db
+    username: sa
+    password: toher@#%521125
+    druid:
+      initial-size: 5
+      max-active: 10
+      max-wait: 2000
+
+#mybatis配置配置
+mybatis:
+  type-aliases-package: com.toher.project
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+mapper:
+  mappers:
+    - cn.toher.rabbitmq.mapper.MyMapper
+  notEmpty: true
+
+pagehelper:
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
